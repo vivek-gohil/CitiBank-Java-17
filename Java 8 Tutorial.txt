@@ -1,0 +1,901 @@
+Java 8 - Lambdas
+
+Why Lambdas ?
+	1. Enables functional programming
+	2. Readable and concise code
+	3. Easier to user api and libraries
+	4. Enables support for parallel processing
+
+Do we really new functional programming ?
+	1. Functional programming allow you to write more readable and maintainable code.(in some cases)
+	2. Problems in OOP
+		i. Everything is object - all code blocks are "associated" with class and objects , which is a problem some time
+		ii. We cannot have a independent functions , it have to be a part of function.
+		iii. Also allow us to use functions as values.
+
+Code Example
+
+package com.borntocode.main;
+
+public class Greeter {
+	public void greet() {
+		System.out.println("Hello World");
+	}
+	
+	public static void main(String[] args) {
+		Greeter greeter = new Greeter();
+		greeter.greet();
+	}
+}
+
+In above code what if we want to pass the behaviour to the greet method ?? 
+
+package com.borntocode.main;
+
+public interface Greeting {
+	public void perfom();
+}
+
+package com.borntocode.main;
+
+public class HelloWorldGreeting implements Greeting {
+	@Override
+	public void perfom() {
+		System.out.println("Hello World");
+	}
+}
+
+package com.borntocode.main;
+
+public class Greeter {
+	public void greet(Greeting greeting) {
+		greeting.perfom();
+	}
+
+	public static void main(String[] args) {
+		Greeter greeter = new Greeter();
+		// greeter.greet();
+
+		HelloWorldGreeting helloWorldGreeting = new HelloWorldGreeting();
+		greeter.greet(helloWorldGreeting);
+	}
+}
+
+
+We are doing some extra work !!
+
+In functional programming we can assing a function to a variable.
+
+Example :: Inline Values
+
+String name = "foo";
+
+double pi = 3.15;
+
+ -----------------------------
+aBlockOfCode = {
+...
+...
+...
+}
+Which is same as below 
+function as a value
+
+public void perfom(){
+System.out.println("Hello World");
+}
+
+aBlockOfCode = public void perfom(){
+System.out.println("Hello World");
+}
+
+aBlockOfCode = _____ void _____(){
+System.out.println("Hello World");
+}
+
+
+aBlockOfCode = (){
+System.out.println("Hello World");
+}
+
+aBlockOfCode = () -> {
+	System.out.println("Hello World");
+}
+
+aBlockOfCode = () ->  System.out.println("Hello World");
+
+What if we have a args 
+
+doubleNumberFunction = (int a) -> a * 2;
+
+addFunction = (int a , int b) -> a + b;
+
+safeDivideFunction = (int a , int b) -> { 
+	if(b==0) return 0;
+	return a / b ;
+};
+
+stringLengthCountFunction = (String s) -> s.length();
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+New Project :: Lambda_Basics_Excercise
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+package com.borntocode.pojo;
+
+public class Person {
+	private String firstName;
+	private String lastName;
+	private int age;
+
+	public Person() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Person(String firstName, String lastName, int age) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	@Override
+	public String toString() {
+		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + "]";
+	}
+
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.List;
+
+import com.borntocode.pojo.Person;
+
+public class PersonMain {
+	public static void main(String[] args) {
+		List<Person> people = Arrays.asList(new Person("Vivek", "Gohil", 31), new Person("Trupti", "Acharekar", 33),
+				new Person("Gurubux", "Gill", 30), new Person("Samarth", "patil", 10));
+		
+		//Step 1 :: Sort the list by last name
+		
+		
+		//Step 2 :: Create a method that prints all the elements in the list
+		
+		
+		//Step 3 :: Create a method that prints all people that have last name beginning with G
+		
+		
+	}
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import com.borntocode.pojo.Person;
+
+public class PersonMain_Java_7 {
+
+	public static void main(String[] args) {
+		List<Person> people = Arrays.asList(new Person("Vivek", "Gohil", 31), new Person("Trupti", "Acharekar", 33),
+				new Person("Gurubux", "Gill", 30), new Person("Samarth", "patil", 10));
+
+		// Step 1 :: Sort the list by last name
+		Collections.sort(people, new Comparator<Person>() {
+			@Override
+			public int compare(Person o1, Person o2) {
+				return o1.getLastName().compareTo(o2.getLastName());
+			}
+		});
+
+		// Step 2 :: Create a method that prints all the elements in the list
+
+		printAll(people);
+		System.out.println("-----------------------------------");
+		// Step 3 :: Create a method that prints all people that have last name
+		// beginning with G
+		printConditionally(people, new Condition() {
+			@Override
+			public boolean test(Person person) {
+				if (person.getLastName().startsWith("G"))
+					return true;
+				return false;
+			}
+		});
+		System.out.println("-----------------------------------");
+		// Step 4 :: Create a method that prints all people that have last name
+		// ending with L
+		printConditionally(people, new Condition() {
+			@Override
+			public boolean test(Person person) {
+				if (person.getLastName().endsWith("l"))
+					return true;
+				return false;
+			}
+		});
+	}
+
+	private static void printConditionally(List<Person> people, Condition condition) {
+		for (Person p : people) {
+			if (condition.test(p))
+				System.out.println(p);
+		}
+	}
+
+	private static void printAll(List<Person> people) {
+		for (Person p : people) {
+			System.out.println(p);
+		}
+
+	}
+
+}
+
+interface Condition {
+	boolean test(Person person);
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import com.borntocode.pojo.Person;
+
+public class PersonMain_Java_8 {
+	public static void main(String[] args) {
+		List<Person> people = Arrays.asList(new Person("Vivek", "Gohil", 31), new Person("Trupti", "Acharekar", 33),
+				new Person("Gurubux", "Gill", 30), new Person("Samarth", "patil", 10));
+
+		// Step 1 :: Sort the list by last name
+		Collections.sort(people, (p1, p2) -> p1.getLastName().compareTo(p2.getLastName()));
+
+		// Step 2 :: Create a method that prints all the elements in the list
+		//printAll(people);
+		printConditionally(people, p -> true);
+
+		// Step 3 :: Create a method that prints all people that have last name
+		// beginning with G
+		printConditionally(people, p -> p.getLastName().startsWith("G"));
+
+	}
+
+//	private static void printAll(List<Person> people) {
+//		for (Person p : people) {
+//			System.out.println(p);
+//		}
+//	}
+
+	private static void printConditionally(List<Person> people, Condition condition) {
+		for (Person p : people) {
+			if (condition.test(p))
+				System.out.println(p);
+		}
+	}
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Using Predicate Interface insted of Condition interface
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+
+import com.borntocode.pojo.Person;
+
+public class PersonMain_Java_8_Predicate {
+	public static void main(String[] args) {
+		List<Person> people = Arrays.asList(new Person("Vivek", "Gohil", 31), new Person("Trupti", "Acharekar", 33),
+				new Person("Gurubux", "Gill", 30), new Person("Samarth", "patil", 10));
+
+		// Step 1 :: Sort the list by last name
+		Collections.sort(people, (p1, p2) -> p1.getLastName().compareTo(p2.getLastName()));
+
+		// Step 2 :: Create a method that prints all the elements in the list
+		//printAll(people);
+		printConditionally(people, p -> true);
+
+		// Step 3 :: Create a method that prints all people that have last name
+		// beginning with G
+		printConditionally(people, p -> p.getLastName().startsWith("G"));
+
+	}
+
+//	private static void printAll(List<Person> people) {
+//		for (Person p : people) {
+//			System.out.println(p);
+//		}
+//	}
+
+	private static void printConditionally(List<Person> people, Predicate<Person> predicate) {
+		for (Person p : people) {
+			if (predicate.test(p))
+				System.out.println(p);
+		}
+	}
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Using Consumer Interface for printing 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+import com.borntocode.pojo.Person;
+
+public class PersonMain_Java_8_Consumer {
+	public static void main(String[] args) {
+		List<Person> people = Arrays.asList(new Person("Vivek", "Gohil", 31), new Person("Trupti", "Acharekar", 33),
+				new Person("Gurubux", "Gill", 30), new Person("Samarth", "patil", 10));
+
+		// Step 1 :: Sort the list by last name
+		Collections.sort(people, (p1, p2) -> p1.getLastName().compareTo(p2.getLastName()));
+
+		// Step 2 :: Create a method that prints all the elements in the list
+		//printAll(people);
+		printConditionally(people, p -> true, p -> System.out.println(p));
+
+		// Step 3 :: Create a method that prints all people that have last name
+		// beginning with G
+		printConditionally(people, p -> p.getLastName().startsWith("G"),p -> System.out.println(p));
+
+	}
+
+//	private static void printAll(List<Person> people) {
+//		for (Person p : people) {
+//			System.out.println(p);
+//		}
+//	}
+
+	private static void printConditionally(List<Person> people, Predicate<Person> predicate , Consumer<Person> consumer) {
+		for (Person p : people) {
+			if (predicate.test(p))
+				consumer.accept(p);
+		}
+	}
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+This reference example
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+public class ThisReferenceExample {
+
+	public void doProcess(int i, Process p) {
+		p.process(i);
+	}
+
+	public static void main(String[] args) {
+		
+//		ThisReferenceExample referenceExample = new ThisReferenceExample();
+//		referenceExample.doProcess(10, i -> System.out.println("Value is " + i));
+
+		ThisReferenceExample referenceExample = new ThisReferenceExample();
+		
+		//System.out.println(this); We cannot access the this ref in static context
+		
+		referenceExample.doProcess(10, new Process() {
+
+			@Override
+			public void process(int i) {
+				System.out.println("Value of i = " + i);
+				System.out.println(this);
+			}
+		});
+
+	}
+}
+
+interface Process {
+	void process(int i);
+}
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+public class ThisReferenceWithLambdaExpression {
+	public void doProcess(int i, Process p) {
+		p.process(i);
+	}
+
+	public void execute() {
+		doProcess(10, i -> {
+			System.out.println("Value of i = " + i);
+			 System.out.println(this);
+		});
+	}
+	public static void main(String[] args) {
+		ThisReferenceWithLambdaExpression referenceWithLambdaExpression = new ThisReferenceWithLambdaExpression();
+//		referenceWithLambdaExpression.doProcess(10, i -> {
+//			System.out.println("Value of i = " + i);
+//			// System.out.println(this); error :: you cannot use this in static reference
+//		});
+		
+		referenceWithLambdaExpression.execute();
+		// This means lambda expression is not using the inner class as it internal implementation !!
+	}
+}
+
+++++++++++++++++++++++++++++++++++++
+Java Streams
+++++++++++++++++++++++++++++++++++++
+
+A sequence of elements supporting sequential and parallel aggregate operations.
+Stream Operations 
+Intermediate Operations
+	Map
+	Filter
+	Sorted
+Terminal Operations
+	Collect
+	forEach
+	Reduce
+	
+Stream Operations don’t change the source.
+
+Stream map and collect example 
+
++++++++++++++++++++++++++++++++++++++++++++++++++++
+package com.borntocode.main;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import com.borntocode.pojo.Person;
+
+public class StreamExample_Map {
+	public static <T> void main(String[] args) {
+
+		// Map example
+
+		List<String> alphabets = Arrays.asList("a", "b", "c", "d", "e");
+
+		// Covert this alphabets to upper case and add it into new list
+		// Java 7 approach
+		List<String> alphabetsUpper = new ArrayList<String>();
+
+		for (String string : alphabets) {
+			alphabetsUpper.add(string.toUpperCase());
+		}
+
+		// Java 8 using Streams
+		alphabets.stream().map(new Function<String, String>() {
+			@Override
+			public String apply(String t) {
+				return t.toUpperCase();
+			}
+		}).forEach(new Consumer<String>() {
+			@Override
+			public void accept(String t) {
+				System.out.println(t);
+			}
+		});
+
+		// ------------------------------------------------
+		alphabets.stream().map(t -> t.toUpperCase()).forEach(t -> System.out.println(t));
+
+		// ------------------------------------------------
+		alphabets.stream().map(t -> t.toUpperCase()).forEach(System.out::println);
+
+		// ------------------------------------------------
+		alphabetsUpper = alphabets.stream().map(t -> t.toUpperCase()).collect(Collectors.toList());
+
+		System.out.println(alphabetsUpper);
+
+		List<Person> people = Arrays.asList(new Person("Vivek", "Gohil", 31), new Person("Trupti", "Acharekar", 33),
+				new Person("Gurubux", "Gill", 30), new Person("Samarth", "patil", 10));
+
+		// Print All the First Name in upper case from the people using map operation
+		// method of stream and Collect.
+
+		List<String> firstNameList = people.stream().map(new Function<Person, String>() {
+			@Override
+			public String apply(Person p) {
+				return p.getFirstName().toUpperCase();
+			}
+		}).collect(Collectors.toList());
+
+		System.out.println(firstNameList);
+
+	}
+}
+
+
+Stream Filter and Foreach Example
+
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+public class StreamExample_Filter {
+	public static <T> void main(String[] args) {
+
+		List<String> names = Arrays.asList("Vivek", "Bahubali", "Trupti", "Samarth");
+
+		// Print all accept Bahubali
+
+		for (String name : names) {
+			if (!name.equals("Bahubali")) {
+				System.out.println(name);
+			}
+		}
+
+		names.stream().filter(new Predicate<String>() {
+			@Override
+			public boolean test(String name) {
+				return !name.equals("Bahubali");
+			}
+		}).forEach(new Consumer<String>() {
+
+			@Override
+			public void accept(String name) {
+				System.out.println(name);
+			}
+		});
+
+		// -------------------------------------------
+
+		names.stream().filter(name -> !name.equals("Bahubali")).forEach(System.out::println);
+
+		names.stream().filter(StreamExample_Filter::isNotBahubali).forEach(System.out::println);
+
+	}
+
+	private static boolean isNotBahubali(String name) {
+		return !name.equals("Bahubali");
+	}
+}
+
+++++++++++++++++++++++++++++++++++++++++++++
+Optional Class in Java 8
+++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.util.Optional;
+import java.util.function.Supplier;
+
+public class PersonOptionalMain_empty {
+
+	public static void main(String[] args) {
+
+		/* Using of empty Method */
+		System.out.println("-".repeat(40));
+		System.out.println("Using empty method");
+		System.out.println("-".repeat(40));
+
+		Optional<Integer> integerValue = Optional.empty();
+		System.out.println(integerValue);
+		// System.out.println(integerValue.get()); // - will throw null pointer
+		// java.util.NoSuchElementException:
+		if (integerValue.isEmpty()) {
+			System.out.println("integerValue is empty");
+		}
+		if (integerValue.isPresent()) {
+			System.out.println(integerValue.get());
+		}
+
+		if (integerValue.isEmpty()) {
+			System.out.println("integerValue is empty");
+		}
+
+		System.out.println(integerValue.orElse(100));
+		System.out.println(integerValue.orElseGet(new Supplier<Integer>() {
+			@Override
+			public Integer get() {
+				return 100;
+			}
+		}));
+
+		System.out.println(integerValue.orElseGet(() -> 100));
+
+//		System.out.println(integerValue.orElseThrow());
+//
+//		System.out.println(integerValue.orElseThrow(() -> new IllegalStateException()));
+//
+//		System.out.println(integerValue.orElseThrow(ArithmeticException::new));
+
+		System.out.println(integerValue.map(i -> i + " Lines ").orElse("No Lines"));
+
+		System.out.println();
+
+	}
+
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+import com.borntocode.pojo.Person;
+
+public class PersonOptionalMain_ofNullable {
+
+	private static List<Person> personList = Arrays.asList(new Person("Vivek", "Gohil", 31),
+			new Person("Trupti", "Acharekar", 33), new Person("Gurubux", "Gill", 30),
+			new Person("Samarth", "patil", 10));
+
+	public static void main(String[] args) {
+		/* Using ofNullable Method */
+		System.out.println("-".repeat(40));
+		System.out.println("Using ofNullable method");
+		System.out.println("-".repeat(40));
+
+		Optional<Integer> integerValue = Optional.ofNullable(null);
+		System.out.println(integerValue);
+		// System.out.println(integerValue.get()); //- will throw null pointer
+		// java.util.NoSuchElementException:
+		if (integerValue.isPresent()) {
+			System.out.println(integerValue.get());
+		} else {
+			System.out.println("No value present");
+		}
+		if (integerValue.isEmpty()) {
+			System.out.println("integerValue is empty");
+		}
+		System.out.println(integerValue.orElse(100));
+
+		System.out.println();
+		System.out.println(integerValue.orElseGet(new Supplier<Integer>() {
+			@Override
+			public Integer get() {
+				return 100;
+			}
+		}));
+
+		System.out.println(integerValue.orElseGet(() -> 100));
+
+		System.out.println(integerValue.orElseThrow());
+
+		System.out.println(integerValue.orElseThrow(() -> new IllegalStateException()));
+
+		System.out.println(integerValue.orElseThrow(ArithmeticException::new));
+
+		System.out.println(integerValue.map(i -> i + " Lines ").orElse("No Lines"));
+	}
+
+	static Person number(int position) {
+		Person person = null;
+
+		if (position >= 0 && position < personList.size()) {
+			person = personList.get(position);
+		}
+		return person;
+	}
+
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public class PersonOptionalMain_of {
+
+	public static void main(String[] args) {
+		// integerValue = 34;
+		/* Using of of Method */
+		System.out.println("-".repeat(40));
+		System.out.println("Using of method");
+		System.out.println("-".repeat(40));
+
+		// integerValue = Optional.of(null); //- this cannot be null - will throw null
+		// pointer exception
+
+		Optional<Integer> integerValue = Optional.of(32);
+
+		System.out.println(integerValue);
+		System.out.println(integerValue.get());
+
+		if (integerValue.isPresent()) {
+			System.out.println(integerValue.get());
+		} else {
+			System.out.println("No value present");
+		}
+		if (integerValue.isEmpty()) {
+			System.out.println("integerValue is empty");
+		}
+
+		System.out.println(integerValue.orElse(100));
+		System.out.println(integerValue.orElseGet(new Supplier<Integer>() {
+			@Override
+			public Integer get() {
+				return 100;
+			}
+		}));
+
+		System.out.println(integerValue.orElseGet(() -> 100));
+
+		System.out.println(integerValue.orElseThrow());
+
+		System.out.println(integerValue.orElseThrow(() -> new IllegalStateException()));
+
+		System.out.println(integerValue.orElseThrow(ArithmeticException::new));
+
+		System.out.println(integerValue.map(new Function<Integer, String>() {
+			public String apply(Integer t) {
+				return t + " Line ";
+			};
+		}).get());
+
+		System.out.println(integerValue.map(i -> i + " Lines ").get());
+
+		System.out.println(integerValue.map(i -> i + " Lines ").orElse("No Lines"));
+
+	}
+
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import com.borntocode.pojo.Person;
+
+public class PersonOptionalMain {
+
+	public static void main(String[] args) {
+
+		List<Person> personList = createPersonList();
+		// Person person = findPerson(personList, "Jack");
+		// System.out.println("Employee Name :: " + person.getFirstName());
+
+		Optional<Person> personOptional = findPerson(personList, "Jack");
+		if (personOptional.isPresent())
+			System.out.println(personOptional.get());
+		else
+			System.out.println("No Employee Found");
+
+	}
+
+	public static List<Person> createPersonList() {
+		List<Person> personList = Arrays.asList(new Person("Vivek", "Gohil", 31), new Person("Trupti", "Acharekar", 33),
+				new Person("Gurubux", "Gill", 30), new Person("Samarth", "patil", 10));
+		return personList;
+	}
+
+	public static Optional<Person> findPerson(List<Person> personList, String name) {
+		for (Person person : personList) {
+			if (person.getFirstName().equals(name))
+				return Optional.<Person>of(person);
+		}
+		return Optional.empty();
+	}
+}
+
+
+++++++++++++++++++++++++++++++++++++++++++++++
+Java Date and Time API
+++++++++++++++++++++++++++++++++++++++++++++++ 
+
+package com.borntocode.main;
+
+import java.time.Duration;
+import java.time.Instant;
+
+public class InstatAndDurationTest {
+
+	public static void main(String[] args) throws InterruptedException {
+
+		Instant start = Instant.now();
+		System.out.println(start);
+
+		Thread.sleep(1000);
+		Instant end = Instant.now();
+
+		System.out.println(end);
+
+		Duration elapsed = Duration.between(start, end);
+
+		System.out.println("Elapsed ::" + elapsed);
+		System.out.println("Elapsed ::" + elapsed.toMillis());
+
+	}
+
+}
+
++++++++++++++++++++++++++++++++++++++++++++++
+
+package com.borntocode.main;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+public class DateAndTimeTest {
+
+	public static void main(String[] args) {
+
+		LocalDate currentDate = LocalDate.now();
+		System.out.println("Current Date :: " + currentDate);
+
+		LocalDate specificDate = LocalDate.of(2018, 8, 15);
+		System.out.println("Specific Date :: " + specificDate);
+
+		LocalTime currentTime = LocalTime.now();
+		System.out.println("Current Time " + currentTime);
+
+		LocalTime specificTime = LocalTime.of(14, 0, 45);
+		System.out.println("Specific Time ::" + specificTime);
+
+		LocalDateTime dateTime = LocalDateTime.now();
+		System.out.println("Local Date and Time " + dateTime);
+
+		LocalDateTime specificDateTime = LocalDateTime.of(specificDate, specificTime);
+		System.out.println("Specific Date and Time :: " + specificDateTime);
+
+	}
+
+}
